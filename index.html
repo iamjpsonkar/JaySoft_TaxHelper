@@ -39,64 +39,158 @@
                             include various forms of income and tips on how to
                             report them.
                         </div>
+                        <div class="container mt-3" id="incomeSectionContent">
+                            <h2>Add Your Annual Income Sources</h2>
+                            <div id="incomeFields">
+                                <!-- Initial Income Fields -->
+                            </div>
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                onclick="addIncomeField()"
+                            >
+                                Add Another Income Source
+                            </button>
+                        </div>
                     </div>
-                    <div class="container mt-3" id="incomeSectionContent">
-                        <h2>Add Your Annual Income Sources</h2>
-                        <div id="incomeFields">
-                            <!-- Initial Income Fields -->
+                </div>
+            </div>
+            <div class="container mt-5">
+                <button
+                    class="btn btn-secondary"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#deductionsSection"
+                    aria-expanded="false"
+                    aria-controls="deductionsSection"
+                >
+                    Deductions
+                </button>
+                <!-- Placeholder for Total Deductions -->
+                <span>Total Deductions: &#8377;</span
+                ><span id="totalDeductions">0</span>
+                <div class="collapse" id="deductionsSection">
+                    <div class="card card-body">
+                        Details about deductions can be added here. This could
+                        include information on various deductions taxpayers are
+                        eligible for.
+                    </div>
+                    <div class="container mt-3" id="deductionsSectionContent">
+                        <h2>Add Your Deductions</h2>
+                        <div id="deductionFields">
+                            <!-- Initial Deduction Fields -->
                         </div>
                         <button
                             type="button"
                             class="btn btn-primary"
-                            onclick="addIncomeField()"
+                            onclick="addDeductionField()"
                         >
-                            Add Another Income Source
+                            Add Another Deduction
                         </button>
                     </div>
                 </div>
             </div>
-
-            <script>
-                let incomeFieldIndex = 1;
-
-                function addIncomeField() {
-                    incomeFieldIndex++;
-                    const container = document.getElementById("incomeFields");
-                    const fieldGroup = document.createElement("div");
-                    fieldGroup.classList.add("mb-3", "income-field-group");
-                    fieldGroup.innerHTML = `
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="incomeSource[]" placeholder="Type of Income">
-                            <input type="number" class="form-control" name="incomeAmount[]" placeholder="Amount" onchange="updateTotalIncome()">
-                            <button class="btn btn-danger" type="button" onclick="deleteIncomeField(this)">X</button>
-                        </div>
-                    `;
-                    container.appendChild(fieldGroup);
-                }
-
-                function updateTotalIncome() {
-                    const amounts = document.querySelectorAll(
-                        '[name="incomeAmount[]"]'
-                    );
-                    let total = 0;
-                    amounts.forEach((amount) => {
-                        if (amount.value) total += parseFloat(amount.value);
-                    });
-                    document.getElementById("totalIncome").textContent =
-                        total.toFixed(2);
-                }
-
-                function deleteIncomeField(element) {
-                    const fieldGroup = element.closest(".income-field-group");
-                    fieldGroup.remove();
-                    updateTotalIncome(); // Recalculate total after deletion
-                }
-
-                // Initial call to set up the first income field and ensure functionality
-                addIncomeField();
-            </script>
+            <div class="container mt-5">
+                <h2>Tax Calculation</h2>
+                <button class="btn btn-success" onclick="calculateTax()">
+                    Calculate Tax
+                </button>
+                <div id="taxCalculationResult">
+                    <!-- Tax calculation result will be displayed here -->
+                </div>
+            </div>
         </main>
         <footer></footer>
         <script src="js/bootstrap.min.js"></script>
+        <script>
+            let incomeFieldIndex = 1;
+
+            function addIncomeField() {
+                incomeFieldIndex++;
+                const container = document.getElementById("incomeFields");
+                const fieldGroup = document.createElement("div");
+                fieldGroup.classList.add("mb-3", "income-field-group");
+                fieldGroup.innerHTML = `
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="incomeSource[]" placeholder="Type of Income">
+                        <input type="number" class="form-control" name="incomeAmount[]" placeholder="Amount" onchange="updateTotalIncome()">
+                        <button class="btn btn-danger" type="button" onclick="deleteIncomeField(this)">X</button>
+                    </div>
+                `;
+                container.appendChild(fieldGroup);
+            }
+
+            function updateTotalIncome() {
+                const amounts = document.querySelectorAll(
+                    '[name="incomeAmount[]"]'
+                );
+                let total = 0;
+                amounts.forEach((amount) => {
+                    if (amount.value) total += parseFloat(amount.value);
+                });
+                document.getElementById("totalIncome").textContent =
+                    total.toFixed(2);
+            }
+
+            function deleteIncomeField(element) {
+                const fieldGroup = element.closest(".income-field-group");
+                fieldGroup.remove();
+                updateTotalIncome(); // Recalculate total after deletion
+            }
+
+            let deductionFieldIndex = 1;
+
+            function addDeductionField() {
+                deductionFieldIndex++;
+                const container = document.getElementById("deductionFields");
+                const fieldGroup = document.createElement("div");
+                fieldGroup.classList.add("mb-3", "deduction-field-group");
+                fieldGroup.innerHTML = `<div class="input-group">
+        <input type="text" class="form-control" name="deductionSource[]" placeholder="Type of Deduction">
+        <input type="number" class="form-control" name="deductionAmount[]" placeholder="Amount" onchange="updateTotalDeductions()">
+        <button class="btn btn-danger" type="button" onclick="deleteDeductionField(this)">X</button>
+    </div>`;
+                container.appendChild(fieldGroup);
+            }
+
+            function updateTotalDeductions() {
+                const amounts = document.querySelectorAll(
+                    '[name="deductionAmount[]"]'
+                );
+                let total = 0;
+                amounts.forEach((amount) => {
+                    if (amount.value) total += parseFloat(amount.value);
+                });
+                document.getElementById("totalDeductions").textContent =
+                    total.toFixed(2);
+            }
+
+            function deleteDeductionField(element) {
+                const fieldGroup = element.closest(".deduction-field-group");
+                fieldGroup.remove();
+                updateTotalDeductions(); // Recalculate total after deletion
+            }
+
+            function calculateTax() {
+                const totalIncome = parseFloat(
+                    document.getElementById("totalIncome").textContent
+                );
+                const totalDeductions = parseFloat(
+                    document.getElementById("totalDeductions").textContent
+                );
+                const taxableIncome = totalIncome - totalDeductions;
+                const taxRate = 0.1; // Example tax rate of 10%
+                const taxDue = taxableIncome * taxRate;
+                document.getElementById(
+                    "taxCalculationResult"
+                ).innerHTML = `Taxable Income: &#8377;${taxableIncome.toFixed(
+                    2
+                )}<br>Tax Due: &#8377;${taxDue.toFixed(2)}`;
+            }
+
+            // Initial calls to set up the first fields and ensure functionality
+            addIncomeField();
+            addDeductionField();
+        </script>
     </body>
 </html>
